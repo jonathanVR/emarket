@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# eMarket — catálogo tipo Kyte (gratis)
 
-## Getting Started
+Tienda/catálogo con **Next.js + TypeScript + Supabase + WhatsApp**.
+Hosting en Vercel (plan Hobby) y base de datos en Supabase (Free).
 
-First, run the development server:
+## Qué incluye
+
+- Catálogo público con filtros (estado, categoría) y orden
+- Detalle de producto
+- Pedido por WhatsApp con mensaje prellenado
+- Admin protegido: crear/editar, subir foto, marcar vendido
+
+## 1. Supabase (gratis)
+
+1. Crea un proyecto en [supabase.com](https://supabase.com)
+2. Ve a **SQL Editor** y ejecuta todo el archivo
+   [`supabase/schema.sql`](supabase/schema.sql)
+3. En **Authentication → Users**, crea un usuario (email + password)
+   para el admin
+4. Copia en **Project Settings → API**:
+   - Project URL
+   - `anon` `public` key
+
+## 2. Variables de entorno
+
+Copia `.env.example` a `.env.local` y completa:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+NEXT_PUBLIC_WHATSAPP_NUMBER=591XXXXXXXX
+NEXT_PUBLIC_STORE_NAME=eMarket
+NEXT_PUBLIC_CURRENCY=BOB
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`NEXT_PUBLIC_WHATSAPP_NUMBER` va **sin** `+` ni espacios (código de país + número).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 3. Desarrollo local
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd emarket
+yarn install
+yarn dev
+```
 
-## Learn More
+Abre [http://localhost:3000](http://localhost:3000)  
+Admin: [http://localhost:3000/admin](http://localhost:3000/admin)
 
-To learn more about Next.js, take a look at the following resources:
+## 4. Deploy en Vercel (gratis)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Sube el repo a GitHub (o importa la carpeta `emarket`)
+2. En [vercel.com](https://vercel.com) → **Add New Project**
+3. Root Directory: `emarket` (si el repo es el padre)
+4. Framework: Next.js (auto)
+5. Añade las mismas variables de `.env.local` en
+   **Project Settings → Environment Variables**
+6. Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+URL típica: `https://tu-proyecto.vercel.app`
 
-## Deploy on Vercel
+## Checklist de uso diario
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Llega el artículo (Amazon u otro)
+2. Entra a `/admin` → **Nuevo producto**
+3. Sube foto, precio, talla/medidas → Guardar
+4. Cuando se venda por WhatsApp → **Marcar vendido**
+5. El catálogo público se actualiza solo
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Scripts
+
+| Comando      | Uso              |
+| ------------ | ---------------- |
+| `yarn dev`   | Desarrollo       |
+| `yarn build` | Build producción |
+| `yarn start` | Servir build     |
+| `yarn lint`  | ESLint           |
+
+## Límites del plan gratis
+
+- **Vercel Hobby**: suficiente para empezar
+- **Supabase Free**: el proyecto puede pausarse si no hay uso;
+  se reactiva al abrir el dashboard
+- Primer gasto opcional: dominio propio (~10–15 USD/año)
