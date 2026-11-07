@@ -12,13 +12,15 @@ type ProductCardProps = {
 export function ProductCard({ product, whatsappNumber }: ProductCardProps) {
   const isSold = product.status === 'sold';
   const whatsappUrl = buildWhatsAppUrl(product, whatsappNumber);
+  const coverUrl = product.imageUrls[0] ?? null;
+  const extraCount = Math.max(product.imageUrls.length - 1, 0);
 
   return (
     <article className={`product-card ${isSold ? 'is-sold' : ''}`}>
       <Link href={`/product/${product.id}`} className="product-card__media">
-        {product.imageUrl ? (
+        {coverUrl ? (
           <Image
-            src={product.imageUrl}
+            src={coverUrl}
             alt={product.title}
             fill
             sizes="(max-width: 640px) 50vw, 25vw"
@@ -30,6 +32,9 @@ export function ProductCard({ product, whatsappNumber }: ProductCardProps) {
         <span className={`status-badge status-badge--${product.status}`}>
           {isSold ? 'Vendida' : 'Disponible'}
         </span>
+        {extraCount > 0 ? (
+          <span className="product-card__photo-count">+{extraCount}</span>
+        ) : null}
       </Link>
       <div className="product-card__body">
         <h2 className="product-card__title">

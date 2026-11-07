@@ -10,7 +10,7 @@ export type Product = {
   measurements: string;
   category: string;
   status: ProductStatus;
-  imageUrl: string | null;
+  imageUrls: string[];
   sortOrder: number;
   createdAt: string;
 };
@@ -26,6 +26,7 @@ export type ProductRow = {
   category: string;
   status: ProductStatus;
   image_url: string | null;
+  image_urls: string[] | null;
   sort_order: number;
   created_at: string;
 };
@@ -39,11 +40,15 @@ export type ProductInput = {
   measurements: string;
   category: string;
   status: ProductStatus;
-  imageUrl: string | null;
+  imageUrls: string[];
   sortOrder: number;
 };
 
 export type SortOption =
-  'newest' | 'priceAsc' | 'priceDesc' | 'nameAsc' | 'nameDesc';
+  | 'newest'
+  | 'priceAsc'
+  | 'priceDesc'
+  | 'nameAsc'
+  | 'nameDesc';
 
 export type StatusFilter = 'all' | ProductStatus;

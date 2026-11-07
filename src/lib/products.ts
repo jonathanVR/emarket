@@ -1,3 +1,4 @@
+import { MAX_PRODUCT_IMAGES } from '@/lib/constants';
 import type {
   Product,
   ProductInput,
@@ -6,6 +7,25 @@ import type {
   StatusFilter,
 } from '@/lib/types';
 import { toNumber } from '@/lib/format';
+
+function normalizeImageUrls(
+  imageUrls: string[] | null | undefined,
+  legacyUrl: string | null | undefined,
+): string[] {
+  const fromArray = (imageUrls ?? []).filter(
+    (url): url is string => typeof url === 'string' && url.trim() !== '',
+  );
+
+  if (fromArray.length > 0) {
+    return fromArray.slice(0, MAX_PRODUCT_IMAGES);
+  }
+
+  if (legacyUrl && legacyUrl.trim() !== '') {
+    return [legacyUrl.trim()];
+  }
+
+  return [];
+}
 
 export function mapProductRow(row: ProductRow): Product {
   return {
@@ -21,13 +41,17 @@ export function mapProductRow(row: ProductRow): Product {
     measurements: row.measurements ?? '',
     category: row.category || 'General',
     status: row.status,
-    imageUrl: row.image_url,
+    imageUrls: normalizeImageUrls(row.image_urls, row.image_url),
     sortOrder: row.sort_order ?? 0,
     createdAt: row.created_at,
   };
 }
 
 export function toProductRow(input: ProductInput) {
+  const imageUrls = input.imageUrls
+    .filter((url) => url.trim() !== '')
+    .slice(0, MAX_PRODUCT_IMAGES);
+
   return {
     title: input.title.trim(),
     description: input.description.trim(),
@@ -37,7 +61,8 @@ export function toProductRow(input: ProductInput) {
     measurements: input.measurements.trim(),
     category: input.category.trim() || 'General',
     status: input.status,
-    image_url: input.imageUrl,
+    image_urls: imageUrls,
+    image_url: imageUrls[0] ?? null,
     sort_order: input.sortOrder,
   };
 }

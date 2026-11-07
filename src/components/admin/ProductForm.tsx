@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { MAX_PRODUCT_IMAGES } from '@/lib/constants';
 import type { Product, ProductStatus } from '@/lib/types';
 
 type ProductFormProps = {
@@ -19,6 +20,12 @@ type FormState = {
   category: string;
   status: ProductStatus;
   sortOrder: string;
+};
+
+type PendingImage = {
+  id: string;
+  file: File;
+  previewUrl: string;
 };
 
 function toFormState(product?: Product): FormState {
@@ -41,15 +48,58 @@ function toFormState(product?: Product): FormState {
 export function ProductForm({ product }: ProductFormProps) {
   const router = useRouter();
   const [form, setForm] = useState<FormState>(toFormState(product));
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(
-    product?.imageUrl ?? null,
+  const [imageUrls, setImageUrls] = useState<string[]>(
+    product?.imageUrls ?? [],
   );
+  const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
+  const totalImages = imageUrls.length + pendingImages.length;
+  const remainingSlots = MAX_PRODUCT_IMAGES - totalImages;
+
+  function updateField<K extends keyof FormState>(
+    key: K,
+    value: FormState[K],
+  ) {
     setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  function handleFileSelect(event: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = '';
+
+    if (files.length === 0) {
+      return;
+    }
+
+    if (remainingSlots <= 0) {
+      setError(`Máximo ${MAX_PRODUCT_IMAGES} fotos por artículo`);
+      return;
+    }
+
+    const accepted = files.slice(0, remainingSlots).map((file) => ({
+      id: crypto.randomUUID(),
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+
+    setPendingImages((current) => [...current, ...accepted]);
+    setError(null);
+  }
+
+  function removeSavedImage(url: string) {
+    setImageUrls((current) => current.filter((item) => item !== url));
+  }
+
+  function removePendingImage(id: string) {
+    setPendingImages((current) => {
+      const target = current.find((item) => item.id === id);
+      if (target) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+      return current.filter((item) => item.id !== id);
+    });
   }
 
   async function uploadImage(file: File): Promise<string> {
@@ -64,7 +114,9 @@ export function ProductForm({ product }: ProductFormProps) {
       throw new Error(uploadError.message);
     }
 
-    const { data } = supabase.storage.from('product-images').getPublicUrl(path);
+    const { data } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(path);
 
     return data.publicUrl;
   }
@@ -83,14 +135,20 @@ export function ProductForm({ product }: ProductFormProps) {
         throw new Error('Precio inválido');
       }
 
-      let nextImageUrl = imageUrl;
-      if (imageFile) {
-        nextImageUrl = await uploadImage(imageFile);
-        setImageUrl(nextImageUrl);
+      const uploadedUrls: string[] = [];
+      for (const pending of pendingImages) {
+        uploadedUrls.push(await uploadImage(pending.file));
       }
 
+      const nextImageUrls = [...imageUrls, ...uploadedUrls].slice(
+        0,
+        MAX_PRODUCT_IMAGES,
+      );
+
       const compareAt =
-        form.compareAtPrice.trim() === '' ? null : Number(form.compareAtPrice);
+        form.compareAtPrice.trim() === ''
+          ? null
+          : Number(form.compareAtPrice);
 
       if (compareAt !== null && Number.isNaN(compareAt)) {
         throw new Error('Precio anterior inválido');
@@ -105,7 +163,8 @@ export function ProductForm({ product }: ProductFormProps) {
         measurements: form.measurements.trim(),
         category: form.category.trim() || 'General',
         status: form.status,
-        image_url: nextImageUrl,
+        image_urls: nextImageUrls,
+        image_url: nextImageUrls[0] ?? null,
         sort_order: Number(form.sortOrder) || 0,
       };
 
@@ -129,6 +188,10 @@ export function ProductForm({ product }: ProductFormProps) {
           throw new Error(insertError.message);
         }
       }
+
+      pendingImages.forEach((item) => {
+        URL.revokeObjectURL(item.previewUrl);
+      });
 
       router.push('/admin');
       router.refresh();
@@ -230,19 +293,50 @@ export function ProductForm({ product }: ProductFormProps) {
         </label>
       </div>
       <label className="field">
-        <span>Foto</span>
+        <span>
+          Fotos ({totalImages}/{MAX_PRODUCT_IMAGES})
+        </span>
         <input
           type="file"
           accept="image/*"
-          onChange={(event) => {
-            const file = event.target.files?.[0] ?? null;
-            setImageFile(file);
-          }}
+          multiple
+          disabled={remainingSlots <= 0}
+          onChange={handleFileSelect}
         />
       </label>
-      {imageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={imageUrl} alt="Vista previa" className="form-preview" />
+      {totalImages > 0 ? (
+        <div className="form-preview-grid">
+          {imageUrls.map((url) => (
+            <div key={url} className="form-preview-item">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt="Vista previa" className="form-preview" />
+              <button
+                type="button"
+                className="btn btn--danger"
+                onClick={() => removeSavedImage(url)}
+              >
+                Quitar
+              </button>
+            </div>
+          ))}
+          {pendingImages.map((item) => (
+            <div key={item.id} className="form-preview-item">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={item.previewUrl}
+                alt="Vista previa"
+                className="form-preview"
+              />
+              <button
+                type="button"
+                className="btn btn--danger"
+                onClick={() => removePendingImage(item.id)}
+              >
+                Quitar
+              </button>
+            </div>
+          ))}
+        </div>
       ) : null}
       {error ? <p className="form-error">{error}</p> : null}
       <div className="form-actions">

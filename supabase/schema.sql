@@ -17,8 +17,12 @@ create table if not exists public.products (
   category text not null default 'General',
   status public.product_status not null default 'available',
   image_url text,
+  image_urls text[] not null default '{}',
   sort_order integer not null default 0,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  constraint products_image_urls_max_5 check (
+    cardinality(image_urls) <= 5
+  )
 );
 
 create index if not exists products_status_idx

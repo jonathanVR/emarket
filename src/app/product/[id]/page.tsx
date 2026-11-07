@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ProductGallery } from '@/components/ProductGallery';
 import { SiteHeader } from '@/components/SiteHeader';
 import { getProduct } from '@/lib/data/products';
 import { getWhatsAppNumber } from '@/lib/data/settings';
@@ -35,23 +35,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
           ← Volver al catálogo
         </Link>
         <article className="product-detail">
-          <div className="product-detail__media">
-            {product.imageUrl ? (
-              <Image
-                src={product.imageUrl}
-                alt={product.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="product-card__image"
-                priority
-              />
-            ) : (
-              <div className="product-card__placeholder">Sin foto</div>
-            )}
-            <span className={`status-badge status-badge--${product.status}`}>
-              {isSold ? 'Vendida' : 'Disponible'}
-            </span>
-          </div>
+          <ProductGallery
+            title={product.title}
+            imageUrls={product.imageUrls}
+            statusLabel={isSold ? 'Vendida' : 'Disponible'}
+            statusClassName={`status-badge--${product.status}`}
+          />
           <div className="product-detail__content">
             <h1>{product.title}</h1>
             <div className="product-card__prices">

@@ -229,6 +229,59 @@ code {
   background: var(--sold);
 }
 
+.product-card__photo-count {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  background: rgba(28, 36, 33, 0.72);
+}
+
+.product-gallery {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.product-gallery__thumbs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.product-gallery__thumb {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 0;
+  background: #d9e2de;
+  cursor: pointer;
+}
+
+.product-gallery__thumb.is-active {
+  border-color: var(--accent);
+}
+
+.form-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.form-preview-item {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.form-preview-item .form-preview {
+  width: 100%;
+}
+
 .product-card__body {
   display: flex;
   flex-direction: column;
