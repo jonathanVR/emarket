@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { CatalogControls } from '@/components/CatalogControls';
 import { ProductCard } from '@/components/ProductCard';
-import { SetupBanner } from '@/components/SetupBanner';
 import { SiteHeader } from '@/components/SiteHeader';
 import { listProducts } from '@/lib/data/products';
 import { getWhatsAppNumber } from '@/lib/data/settings';
@@ -45,7 +44,6 @@ export default async function HomePage({ searchParams }: HomeProps) {
             coordinar la compra.
           </p>
         </section>
-        <SetupBanner whatsappNumber={whatsappNumber} />
         <Suspense fallback={null}>
           <CatalogControls categories={categories} />
         </Suspense>

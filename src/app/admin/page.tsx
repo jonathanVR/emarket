@@ -12,14 +12,9 @@ export default async function AdminPage() {
     <>
       <div className="admin-title-row">
         <h1>Productos</h1>
-        <div className="admin-bar__actions">
-          <Link href="/admin/settings" className="btn btn--ghost">
-            WhatsApp
-          </Link>
-          <Link href="/admin/products/new" className="btn btn--primary">
-            Nuevo producto
-          </Link>
-        </div>
+        <Link href="/admin/products/new" className="btn btn--primary">
+          Nuevo producto
+        </Link>
       </div>
       {products.length === 0 ? (
         <div className="empty-state">

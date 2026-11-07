@@ -86,33 +86,3 @@ create policy "Authenticated can delete product images"
   to authenticated
   using (bucket_id = 'product-images');
 
-create table if not exists public.store_settings (
-  id integer primary key check (id = 1),
-  whatsapp_number text not null default '',
-  updated_at timestamptz not null default now()
-);
-
-insert into public.store_settings (id, whatsapp_number)
-values (1, '')
-on conflict (id) do nothing;
-
-alter table public.store_settings enable row level security;
-
-create policy "Public can read store settings"
-  on public.store_settings
-  for select
-  to anon, authenticated
-  using (true);
-
-create policy "Authenticated can update store settings"
-  on public.store_settings
-  for update
-  to authenticated
-  using (true)
-  with check (true);
-
-create policy "Authenticated can insert store settings"
-  on public.store_settings
-  for insert
-  to authenticated
-  with check (true);

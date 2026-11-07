@@ -33,9 +33,9 @@ NEXT_PUBLIC_STORE_NAME=eMarket
 NEXT_PUBLIC_CURRENCY=BOB
 ```
 
-`WHATSAPP_NUMBER` va **sin** `+` ni espacios (código de país + número).
-Se lee en el servidor en cada visita, así que al cambiarlo
-en Vercel basta con redesplegar.
+`WHATSAPP_NUMBER` (sin `NEXT_PUBLIC_`) es el lugar recomendado:
+va en Vercel / `.env.local`, no en Git ni en la base de datos.
+Solo dígitos con código de país. Tras cambiarlo en Vercel, redespliega.
 
 ## 3. Desarrollo local
 
