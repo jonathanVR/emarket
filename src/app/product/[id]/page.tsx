@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/SiteHeader';
 import { getProduct } from '@/lib/data/products';
+import { getWhatsAppNumber } from '@/lib/data/settings';
 import { formatPrice } from '@/lib/format';
 import { buildWhatsAppUrl } from '@/lib/whatsapp';
 
@@ -14,18 +15,21 @@ type ProductPageProps = {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const product = await getProduct(id);
+  const [product, whatsappNumber] = await Promise.all([
+    getProduct(id),
+    getWhatsAppNumber(),
+  ]);
 
   if (!product) {
     notFound();
   }
 
   const isSold = product.status === 'sold';
-  const whatsappUrl = buildWhatsAppUrl(product);
+  const whatsappUrl = buildWhatsAppUrl(product, whatsappNumber);
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader whatsappNumber={whatsappNumber} />
       <main className="page-shell">
         <Link href="/" className="text-link">
           ← Volver al catálogo

@@ -14,17 +14,6 @@ export function isSupabaseConfigured(): boolean {
   return Boolean(getSupabaseUrl() && getSupabaseAnonKey());
 }
 
-export function getWhatsAppNumber(): string {
-  // Prefer WHATSAPP_NUMBER (server-only, read at request time).
-  // NEXT_PUBLIC_* can stay stuck after a redeploy because Next
-  // inlines it into the build.
-  const phone = clean(
-    process.env.WHATSAPP_NUMBER ||
-      process.env.NEXT_PUBLIC_WHATSAPP_NUMBER,
-  );
-  return phone.replace(/\D/g, '');
-}
-
 export function getStoreName(): string {
   return clean(process.env.NEXT_PUBLIC_STORE_NAME) || 'eMarket';
 }

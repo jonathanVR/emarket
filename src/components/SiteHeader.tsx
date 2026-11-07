@@ -1,13 +1,16 @@
 import Link from 'next/link';
-import { getStoreName, getWhatsAppNumber } from '@/lib/env';
+import { getStoreName } from '@/lib/env';
 
 type SiteHeaderProps = {
   showAdminLink?: boolean;
+  whatsappNumber?: string;
 };
 
-export function SiteHeader({ showAdminLink = false }: SiteHeaderProps) {
+export function SiteHeader({
+  showAdminLink = false,
+  whatsappNumber = '',
+}: SiteHeaderProps) {
   const storeName = getStoreName();
-  const phone = getWhatsAppNumber();
 
   return (
     <header className="site-header">
@@ -16,10 +19,10 @@ export function SiteHeader({ showAdminLink = false }: SiteHeaderProps) {
           {storeName}
         </Link>
         <nav className="site-header__nav">
-          {phone ? (
+          {whatsappNumber ? (
             <a
               className="text-link"
-              href={`https://wa.me/${phone}`}
+              href={`https://wa.me/${whatsappNumber}`}
               target="_blank"
               rel="noreferrer"
             >

@@ -1,9 +1,10 @@
-import { getWhatsAppNumber } from '@/lib/env';
 import type { Product } from '@/lib/types';
 import { formatPrice } from '@/lib/format';
 
-export function buildWhatsAppUrl(product: Product): string | null {
-  const phone = getWhatsAppNumber();
+export function buildWhatsAppUrl(
+  product: Product,
+  phone: string,
+): string | null {
   if (!phone) {
     return null;
   }

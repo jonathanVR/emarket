@@ -1,8 +1,12 @@
-import { isSupabaseConfigured, getWhatsAppNumber } from '@/lib/env';
+import { isSupabaseConfigured } from '@/lib/env';
 
-export function SetupBanner() {
+type SetupBannerProps = {
+  whatsappNumber?: string;
+};
+
+export function SetupBanner({ whatsappNumber = '' }: SetupBannerProps) {
   const missingSupabase = !isSupabaseConfigured();
-  const missingWhatsApp = !getWhatsAppNumber();
+  const missingWhatsApp = !whatsappNumber;
 
   if (!missingSupabase && !missingWhatsApp) {
     return null;
@@ -12,12 +16,13 @@ export function SetupBanner() {
     <div className="setup-banner">
       <p>
         Configura tu archivo <code>.env.local</code> (mira{' '}
-        <code>.env.example</code>) y ejecuta <code>supabase/schema.sql</code> en
-        Supabase.
+        <code>.env.example</code>) y ejecuta{' '}
+        <code>supabase/schema.sql</code> en Supabase. El número de WhatsApp
+        también se puede guardar en <code>/admin/settings</code>.
       </p>
       <ul>
         {missingSupabase ? <li>Faltan credenciales de Supabase</li> : null}
-        {missingWhatsApp ? <li>Falta WHATSAPP_NUMBER</li> : null}
+        {missingWhatsApp ? <li>Falta el número de WhatsApp</li> : null}
       </ul>
     </div>
   );

@@ -6,11 +6,12 @@ import { buildWhatsAppUrl } from '@/lib/whatsapp';
 
 type ProductCardProps = {
   product: Product;
+  whatsappNumber: string;
 };
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, whatsappNumber }: ProductCardProps) {
   const isSold = product.status === 'sold';
-  const whatsappUrl = buildWhatsAppUrl(product);
+  const whatsappUrl = buildWhatsAppUrl(product, whatsappNumber);
 
   return (
     <article className={`product-card ${isSold ? 'is-sold' : ''}`}>

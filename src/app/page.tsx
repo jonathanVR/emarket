@@ -4,6 +4,7 @@ import { ProductCard } from '@/components/ProductCard';
 import { SetupBanner } from '@/components/SetupBanner';
 import { SiteHeader } from '@/components/SiteHeader';
 import { listProducts } from '@/lib/data/products';
+import { getWhatsAppNumber } from '@/lib/data/settings';
 import { getStoreName } from '@/lib/env';
 import { filterAndSortProducts, uniqueCategories } from '@/lib/products';
 import type { SortOption, StatusFilter } from '@/lib/types';
@@ -20,7 +21,10 @@ type HomeProps = {
 
 export default async function HomePage({ searchParams }: HomeProps) {
   const params = await searchParams;
-  const products = await listProducts();
+  const [products, whatsappNumber] = await Promise.all([
+    listProducts(),
+    getWhatsAppNumber(),
+  ]);
   const categories = uniqueCategories(products);
 
   const status = (params.status as StatusFilter) || 'all';
@@ -32,7 +36,7 @@ export default async function HomePage({ searchParams }: HomeProps) {
 
   return (
     <>
-      <SiteHeader showAdminLink />
+      <SiteHeader showAdminLink whatsappNumber={whatsappNumber} />
       <main className="page-shell">
         <section className="hero">
           <h1>{storeName}</h1>
@@ -41,7 +45,7 @@ export default async function HomePage({ searchParams }: HomeProps) {
             coordinar la compra.
           </p>
         </section>
-        <SetupBanner />
+        <SetupBanner whatsappNumber={whatsappNumber} />
         <Suspense fallback={null}>
           <CatalogControls categories={categories} />
         </Suspense>
@@ -55,7 +59,11 @@ export default async function HomePage({ searchParams }: HomeProps) {
         ) : (
           <section className="product-grid">
             {visible.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                whatsappNumber={whatsappNumber}
+              />
             ))}
           </section>
         )}
