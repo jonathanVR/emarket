@@ -28,12 +28,14 @@ Copia `.env.example` a `.env.local` y completa:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-NEXT_PUBLIC_WHATSAPP_NUMBER=591XXXXXXXX
+WHATSAPP_NUMBER=591XXXXXXXX
 NEXT_PUBLIC_STORE_NAME=eMarket
 NEXT_PUBLIC_CURRENCY=BOB
 ```
 
-`NEXT_PUBLIC_WHATSAPP_NUMBER` va **sin** `+` ni espacios (código de país + número).
+`WHATSAPP_NUMBER` va **sin** `+` ni espacios (código de país + número).
+Se lee en el servidor en cada visita, así que al cambiarlo
+en Vercel basta con redesplegar.
 
 ## 3. Desarrollo local
 

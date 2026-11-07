@@ -17,7 +17,7 @@ export function SetupBanner() {
       </p>
       <ul>
         {missingSupabase ? <li>Faltan credenciales de Supabase</li> : null}
-        {missingWhatsApp ? <li>Falta NEXT_PUBLIC_WHATSAPP_NUMBER</li> : null}
+        {missingWhatsApp ? <li>Falta WHATSAPP_NUMBER</li> : null}
       </ul>
     </div>
   );
